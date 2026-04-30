@@ -1,0 +1,39 @@
+name: FamilyHub
+options:
+  bundleIdPrefix: com.familyhub
+  deploymentTarget:
+    iOS: "17.0"
+packages:
+  GoogleSignIn:
+    url: https://github.com/google/GoogleSignIn-iOS
+    from: "7.1.0"
+targets:
+  FamilyHub:
+    type: application
+    platform: iOS
+    sources: FamilyHub
+    info:
+      path: FamilyHub/Info.plist
+      properties:
+        UILaunchScreen:
+          UIColorName: AccentColor
+        CFBundleURLTypes:
+          - CFBundleTypeRole: Editor
+            CFBundleURLSchemes:
+              - $(REVERSED_CLIENT_ID)
+        GIDClientID: $(CLIENT_ID)
+        NSLocationWhenInUseUsageDescription: "Used to show local weather"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.familyhub.FamilyHub
+        SWIFT_VERSION: "5.9"
+        DEVELOPMENT_TEAM: ""
+        CLIENT_ID: ""
+        REVERSED_CLIENT_ID: ""
+    dependencies:
+      - package: GoogleSignIn
+        product: GoogleSignIn
+      - package: GoogleSignIn
+        product: GoogleSignInSwift
+    scheme:
+      testTargets: []
