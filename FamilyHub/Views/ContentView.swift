@@ -2,14 +2,15 @@ import SwiftUI
 
 struct ContentView: View {
 
-    @EnvironmentObject var appVM: AppViewModel
+    @EnvironmentObject var appVM:      AppViewModel
+    @EnvironmentObject var settingsVM: SettingsViewModel
 
-    @StateObject private var tasksVM    = TasksViewModel()
-    @StateObject private var rewardsVM  = RewardsViewModel()
-    @StateObject private var calendarVM = CalendarViewModel()
-    @StateObject private var weatherVM  = WeatherViewModel()
+    @StateObject private var tasksVM     = TasksViewModel()
+    @StateObject private var rewardsVM   = RewardsViewModel()
+    @StateObject private var calendarVM  = CalendarViewModel()
+    @StateObject private var weatherVM   = WeatherViewModel()
     @StateObject private var groceriesVM = GroceriesViewModel()
-    @StateObject private var budgetVM   = BudgetViewModel()
+    @StateObject private var budgetVM    = BudgetViewModel()
 
     @State private var selectedTab: Int = 0
 
@@ -62,8 +63,15 @@ struct ContentView: View {
                     Label("Budget", systemImage: selectedTab == 6 ? "dollarsign.circle.fill" : "dollarsign.circle")
                 }
                 .tag(6)
+
+            SettingsView(weatherVM: weatherVM)
+                .tabItem {
+                    Label("Settings", systemImage: selectedTab == 7 ? "gearshape.fill" : "gearshape")
+                }
+                .tag(7)
         }
         .environmentObject(appVM)
+        .environmentObject(settingsVM)
         .tint(.primaryPurple)
         .task {
             // Load all data after spreadsheet is ready

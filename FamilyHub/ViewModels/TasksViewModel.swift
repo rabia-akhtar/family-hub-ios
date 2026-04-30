@@ -8,30 +8,19 @@ final class TasksViewModel: ObservableObject {
     @Published var errorMessage: String?
 
     // MARK: - Filters
+    // "all" = everything, "mine" = signed-in user's tasks, any other string = category name
 
-    @Published var selectedFilter: TaskFilter = .all
+    @Published var activeFilter: String = "all"
     @Published var selectedAssignee: String = ""
-
-    enum TaskFilter: String, CaseIterable {
-        case all    = "All"
-        case mine   = "Mine"
-        case chore  = "Chores"
-        case house  = "House"
-        case cats   = "Cats"
-        case other  = "Other"
-    }
 
     // MARK: - Computed
 
     var filteredTasks: [TaskItem] {
         tasks.filter { task in
-            switch selectedFilter {
-            case .all:   return true
-            case .mine:  return task.assignee.lowercased() == selectedAssignee.lowercased()
-            case .chore: return task.category.lowercased() == "chore"
-            case .house: return task.category.lowercased() == "house"
-            case .cats:  return task.category.lowercased() == "cats"
-            case .other: return task.category.lowercased() == "other"
+            switch activeFilter {
+            case "all":  return true
+            case "mine": return task.assignee.lowercased() == selectedAssignee.lowercased()
+            default:     return task.category.lowercased() == activeFilter.lowercased()
             }
         }
     }

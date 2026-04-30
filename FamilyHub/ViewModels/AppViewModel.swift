@@ -14,6 +14,10 @@ final class AppViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
 
+    // MARK: - Settings (source of truth for all user-configurable values)
+
+    let settingsVM = SettingsViewModel()
+
     // MARK: - Services
 
     let authService   = GoogleAuthService()

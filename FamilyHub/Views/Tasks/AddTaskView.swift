@@ -2,19 +2,20 @@ import SwiftUI
 
 struct AddTaskView: View {
 
-    @EnvironmentObject var appVM: AppViewModel
+    @EnvironmentObject var appVM:      AppViewModel
+    @EnvironmentObject var settingsVM: SettingsViewModel
     @ObservedObject var tasksVM: TasksViewModel
     @Environment(\.dismiss) private var dismiss
 
     @State private var name: String = ""
-    @State private var category: String = AppConfig.taskCategories[0]
+    @State private var category: String = ""
     @State private var assignee: String = ""
     @State private var hasDueDate: Bool = false
     @State private var dueDate: Date = Date()
     @State private var isSaving: Bool = false
 
     private var pointsValue: Int {
-        AppConfig.pointsForCategory[category.lowercased()] ?? 3
+        settingsVM.pointValue(for: category)
     }
 
     private var canSave: Bool {
@@ -27,22 +28,34 @@ struct AddTaskView: View {
             Form {
                 Section("Task Details") {
                     TextField("Task name", text: $name)
+                        .onAppear {
+                            if category.isEmpty {
+                                category = settingsVM.taskCategories.first?.name ?? "Other"
+                            }
+                        }
 
                     Picker("Category", selection: $category) {
-                        ForEach(AppConfig.taskCategories, id: \.self) { cat in
+                        ForEach(settingsVM.taskCategories) { cat in
                             Label {
-                                Text(cat.capitalized)
+                                Text(cat.name)
                             } icon: {
-                                Circle()
-                                    .fill(Color.categoryColor(for: cat))
-                                    .frame(width: 10, height: 10)
+                                Text(cat.emoji)
                             }
-                            .tag(cat)
+                            .tag(cat.name)
                         }
                     }
 
-                    TextField("Assigned to", text: $assignee)
-                        .onAppear { assignee = appVM.userDisplayName }
+                    Picker("Assigned to", selection: $assignee) {
+                        ForEach(settingsVM.familyMembers, id: \.self) { member in
+                            Text(member).tag(member)
+                        }
+                    }
+                    .onAppear {
+                        // Default to the signed-in user if their name is in the list
+                        let name = appVM.userDisplayName
+                        assignee = settingsVM.familyMembers.first(where: { $0 == name })
+                            ?? settingsVM.familyMembers.first ?? name
+                    }
                 }
 
                 Section("Points") {

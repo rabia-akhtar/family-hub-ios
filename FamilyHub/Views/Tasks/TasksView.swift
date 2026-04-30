@@ -2,7 +2,8 @@ import SwiftUI
 
 struct TasksView: View {
 
-    @EnvironmentObject var appVM: AppViewModel
+    @EnvironmentObject var appVM:      AppViewModel
+    @EnvironmentObject var settingsVM: SettingsViewModel
     @ObservedObject var tasksVM: TasksViewModel
 
     @State private var showAddTask = false
@@ -51,15 +52,19 @@ struct TasksView: View {
     private var filterBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                ForEach(TasksViewModel.TaskFilter.allCases, id: \.self) { filter in
+                FilterChip(title: "All",  isSelected: tasksVM.activeFilter == "all")  {
+                    tasksVM.activeFilter = "all"
+                }
+                FilterChip(title: "Mine", isSelected: tasksVM.activeFilter == "mine") {
+                    tasksVM.activeFilter = "mine"
+                    tasksVM.selectedAssignee = appVM.userDisplayName
+                }
+                ForEach(settingsVM.taskCategories) { cat in
                     FilterChip(
-                        title: filter.rawValue,
-                        isSelected: tasksVM.selectedFilter == filter
+                        title: "\(cat.emoji) \(cat.name)",
+                        isSelected: tasksVM.activeFilter == cat.name
                     ) {
-                        tasksVM.selectedFilter = filter
-                        if filter == .mine {
-                            tasksVM.selectedAssignee = appVM.userDisplayName
-                        }
+                        tasksVM.activeFilter = cat.name
                     }
                 }
             }
@@ -169,7 +174,7 @@ struct TasksView: View {
     }
 
     private func showCompletionFeedback(for task: TaskItem) {
-        completionFeedback = "+\(task.pointsValue) pts earned! \(AppConfig.milestone(for: task.pointsValue).emoji)"
+        completionFeedback = "+\(task.pointsValue) pts earned! \(settingsVM.milestone(for: task.pointsValue).emoji)"
         Task {
             try? await Task.sleep(nanoseconds: 2_000_000_000)
             completionFeedback = nil

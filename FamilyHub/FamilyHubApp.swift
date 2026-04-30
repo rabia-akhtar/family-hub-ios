@@ -12,6 +12,7 @@ struct FamilyHubApp: App {
                 if appVM.isSignedIn {
                     ContentView()
                         .environmentObject(appVM)
+                        .environmentObject(appVM.settingsVM)
                 } else {
                     AuthView()
                         .environmentObject(appVM)

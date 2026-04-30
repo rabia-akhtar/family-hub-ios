@@ -2,11 +2,12 @@ import SwiftUI
 
 struct AddExpenseView: View {
 
-    @EnvironmentObject var appVM: AppViewModel
+    @EnvironmentObject var appVM:      AppViewModel
+    @EnvironmentObject var settingsVM: SettingsViewModel
     @ObservedObject var budgetVM: BudgetViewModel
     @Environment(\.dismiss) private var dismiss
 
-    @State private var category: String = AppConfig.budgetCategories[0]
+    @State private var category: String = ""
     @State private var amountText: String = ""
     @State private var description: String = ""
     @State private var date: Date = Date()
@@ -20,7 +21,7 @@ struct AddExpenseView: View {
             Form {
                 Section("Expense Details") {
                     Picker("Category", selection: $category) {
-                        ForEach(AppConfig.budgetCategories, id: \.self) { cat in
+                        ForEach(settingsVM.budgetCategories, id: \.self) { cat in
                             Label {
                                 Text(cat)
                             } icon: {
@@ -29,6 +30,11 @@ struct AddExpenseView: View {
                                     .frame(width: 10, height: 10)
                             }
                             .tag(cat)
+                        }
+                    }
+                    .onAppear {
+                        if category.isEmpty {
+                            category = settingsVM.budgetCategories.first ?? "Other"
                         }
                     }
 

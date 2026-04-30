@@ -24,11 +24,8 @@ final class BudgetViewModel: ObservableObject {
         for entry in currentMonthEntries {
             map[entry.category, default: 0] += entry.amount
         }
-        return AppConfig.budgetCategories
-            .compactMap { cat -> (category: String, total: Double)? in
-                guard let total = map[cat], total > 0 else { return nil }
-                return (category: cat, total: total)
-            }
+        return map.map { (category: $0.key, total: $0.value) }
+            .filter { $0.total > 0 }
             .sorted { $0.total > $1.total }
     }
 
