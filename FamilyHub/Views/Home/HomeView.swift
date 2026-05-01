@@ -349,16 +349,3 @@ private struct HomeLeaderboardRow: View {
     }
 }
 
-private struct CategoryBadge: View {
-    let category: String
-
-    var body: some View {
-        Text(category.capitalized)
-            .font(.system(size: 10, weight: .semibold))
-            .padding(.horizontal, 7)
-            .padding(.vertical, 3)
-            .background(Color.categoryColor(for: category).opacity(0.25))
-            .foregroundColor(Color.categoryColor(for: category))
-            .cornerRadius(6)
-    }
-}
