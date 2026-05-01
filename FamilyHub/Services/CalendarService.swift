@@ -87,8 +87,7 @@ final class CalendarService {
             }
 
             for item in items {
-                guard let id = item["id"] as? String,
-                      let summary = item["summary"] as? String ?? "No Title" else { continue }
+                guard let id = item["id"] as? String else { continue }
 
                 let title = (item["summary"] as? String) ?? "No Title"
 
