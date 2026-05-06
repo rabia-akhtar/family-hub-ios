@@ -13,6 +13,7 @@ struct ContentView: View {
     @StateObject private var budgetVM    = BudgetViewModel()
 
     @State private var selectedTab: Int = 0
+    @State private var showSetupOverlay: Bool = true   // auto-clears after timeout
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -74,8 +75,13 @@ struct ContentView: View {
         .environmentObject(settingsVM)
         .tint(.primaryPurple)
         .task {
-            // Load all data after spreadsheet is ready
+            // Auto-dismiss the setup overlay after 10 seconds no matter what
+            Task {
+                try? await Task.sleep(nanoseconds: 10_000_000_000)
+                showSetupOverlay = false
+            }
             await waitForSpreadsheet()
+            showSetupOverlay = false
             await loadAllData()
         }
         .alert("Error", isPresented: Binding(
@@ -87,7 +93,7 @@ struct ContentView: View {
             Text(appVM.errorMessage ?? "")
         }
         .overlay {
-            if appVM.isLoading && appVM.spreadsheetId == nil {
+            if showSetupOverlay && appVM.isLoading && appVM.spreadsheetId == nil {
                 ZStack {
                     Color.black.opacity(0.4).ignoresSafeArea()
                     VStack(spacing: 16) {
